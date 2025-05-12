@@ -1,0 +1,16 @@
+__pycache__/
+
+# AF3 output files
+*_AF3_SCREEN/
+
+# run scripts
+run_scripts/
+
+# log files
+log_files/
+
+# output files
+output_*/
+
+# model files
+*.pdb
