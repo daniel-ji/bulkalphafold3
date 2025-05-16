@@ -4,6 +4,7 @@ import os
 import numpy as np
 from Bio.PDB import MMCIFParser, MMCIFIO
 
+
 def get_plddt_sliding_window_mmcif(input_file, residue_sliding_window=1, target_chain_id="PREY"):
     """
     Gets the corresponding mmCIF file with modified pLDDT (B-factor) values based on a sliding window. If it does not exist, it creates it:
@@ -14,11 +15,11 @@ def get_plddt_sliding_window_mmcif(input_file, residue_sliding_window=1, target_
     """
 
     output_file = input_file.replace(".cif", f"_plddt_window_{residue_sliding_window}.cif")
-    
+
     if os.path.exists(output_file):
         # print(f"Output file {output_file} already exists. Skipping modification.")
         return output_file
-    
+
     parser = MMCIFParser(QUIET=True)
 
     structure = parser.get_structure("structure", input_file)
@@ -27,7 +28,7 @@ def get_plddt_sliding_window_mmcif(input_file, residue_sliding_window=1, target_
         for chain in model:
             if chain.id != target_chain_id:
                 continue
-            
+
             # print(f"  Found target chain: {chain.id}")
             residue_bfactors = [np.mean([atom.get_bfactor() for atom in residue]) for residue in chain]
             new_residue_bfactors = []

@@ -2,26 +2,26 @@ import os
 import pandas as pd
 from modify_mmcif_plddt import get_plddt_sliding_window_mmcif
 import multiprocessing as mp
-from constants import FOLDERS
+from constants import FOLDERS, PROCESS_COUNT
 
-PROCESS_COUNT = 10
+N_MODEL = -1  # -1 for all models
+# N_MODEL = 2
 
-N_MODEL = -1 # -1 for all models
-# N_MODEL = 2 
 
 def get_model_files(folder, residue_sliding_window, n_model=N_MODEL):
     """
     Get model files from the given folder. Returned files vary depending on the provided sliding window length for calculating per-residue PLDDT scores.
-    """ 
+    """
 
     with mp.Pool(processes=PROCESS_COUNT) as pool:
         model_folders = [f for f in os.listdir(folder) if os.path.isdir(os.path.join(folder, f))]
         all_model_files = pool.starmap(process_model_folder, [(model_folder, folder, residue_sliding_window, n_model) for model_folder in model_folders])
-    
+
     all_model_files = [item for sublist in all_model_files for item in sublist]  # flatten the list of lists
 
     print(f"Found {len(all_model_files)} model files in {folder}")
-    return all_model_files 
+    return all_model_files
+
 
 def process_model_folder(model_folder, folder, residue_sliding_window, n_model=N_MODEL):
     model_files = []
@@ -37,7 +37,8 @@ def process_model_folder(model_folder, folder, residue_sliding_window, n_model=N
         sliding_window_model_file = get_plddt_sliding_window_mmcif(model_file_path, residue_sliding_window=residue_sliding_window)
         model_files.append(sliding_window_model_file)
 
-    return model_files 
+    return model_files
+
 
 if __name__ == "__main__":
     for folder in FOLDERS:

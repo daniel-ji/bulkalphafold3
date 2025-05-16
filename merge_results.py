@@ -1,8 +1,6 @@
 import os
 import pandas as pd
-from constants import FOLDERS
-
-WINDOW_SIZE = 11
+from constants import FOLDERS, PLDDT_SLIDING_WINDOW
 
 output_folder = "output_merged_results/"
 if not os.path.exists(output_folder):
@@ -12,19 +10,19 @@ for folder in FOLDERS:
     print(f"Processing {folder}", flush=True)
     predictions_file = "output_raw_results/" + folder + "_results.csv"
 
-    if WINDOW_SIZE > 0:
-        clashes_file = "output_all_clashes/" + folder + f"_clashes_plddt_window_{WINDOW_SIZE}.csv"
-        binding_file = "output_binding_domain/" + folder + f"_binding_domain_area_plddt_filtered_sliding_window_{WINDOW_SIZE}.csv"
-        output_file = output_folder + folder + f"_merged_plddt_window_{WINDOW_SIZE}.csv"
+    if PLDDT_SLIDING_WINDOW > 0:
+        clashes_file = "output_all_clashes/" + folder + f"_clashes_plddt_window_{PLDDT_SLIDING_WINDOW}.csv"
+        binding_file = "output_binding_domain/" + folder + f"_binding_domain_plddt_window_{PLDDT_SLIDING_WINDOW}.csv"
+        output_file = output_folder + folder + f"_merged_plddt_window_{PLDDT_SLIDING_WINDOW}.csv"
     else:
         clashes_file = "output_all_clashes/" + folder + "_clashes.csv"
-        binding_file = "output_binding_domain/" + folder + "_binding_domain_area.csv"
+        binding_file = "output_binding_domain/" + folder + "_binding_domain.csv"
         output_file = output_folder + folder + "_merged.csv"
 
     predictions_df = pd.read_csv(predictions_file)
 
-    if WINDOW_SIZE > 0:
-        predictions_df["model"] = predictions_df["model"].str.replace(".cif", f"_plddt_window_{WINDOW_SIZE}.cif")
+    if PLDDT_SLIDING_WINDOW > 0:
+        predictions_df["model"] = predictions_df["model"].str.replace(".cif", f"_plddt_window_{PLDDT_SLIDING_WINDOW}.cif")
 
     clashes_df = pd.read_csv(clashes_file)
     binding_df = pd.read_csv(binding_file)
@@ -38,4 +36,3 @@ for folder in FOLDERS:
     assert len(merged_df) == len(predictions_df), f"Merged DataFrame has different length than original DataFrames {len(merged_df)} vs {len(predictions_df)}"
 
     merged_df.to_csv(output_file, index=False)
-

@@ -14,3 +14,7 @@ output_*/
 
 # model files
 *.pdb
+
+# temporary files
+*.temp.cxc
+*.temp

@@ -3,15 +3,13 @@
 from multiprocessing import Pool
 from calculate_clashes import calculate_clashes
 from files_helper import get_model_files
-from constants import FOLDERS
+from constants import FOLDERS, PLDDT_SLIDING_WINDOW, PROCESS_COUNT
 
 LRRK2_REFERENCE_PDB = "LRRK2_RCKW.pdb"
-PROCESS_COUNT = 10
 
-PLDDT_SLIDING_WINDOW = 11
 
 def process_folder(folder_name):
-    csv_file = folder_name + f"_clashes_plddt_window_{PLDDT_SLIDING_WINDOW}.csv"
+    csv_file = "output_all_clashes/" + folder_name + f"_clashes_plddt_window_{PLDDT_SLIDING_WINDOW}.csv"
 
     print(f"Processing {folder_name}", flush=True)
 
@@ -29,5 +27,7 @@ def process_folder(folder_name):
 
     print(f"Done processing {folder_name}", flush=True)
 
-for folder in FOLDERS:
-    process_folder(folder)
+
+if __name__ == "__main__":
+    for folder in FOLDERS:
+        process_folder(folder)
