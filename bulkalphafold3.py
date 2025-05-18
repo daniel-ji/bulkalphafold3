@@ -132,7 +132,7 @@ def process_folder(input_fasta, output_folder):
     --input_dir=/root/af_input/{output_folder} \
     --model_dir=/root/models \
     --output_dir=/root/af_output/{output_folder}
-    """
+"""
         f.write(output_command)
 
 
