@@ -52,10 +52,6 @@ def process_folder(folder, results_csv):
                     f'{prediction["model"]},{result[0]}.fasta,{prediction["seed"]},{prediction["sample"]},https://www.uniprot.org/uniprotkb/{uniprot_id}/entry,{prediction["ipTM"]},{prediction["pTM"]},{prediction["pLDDT"]},{prediction["bait pLDDT"]},{prediction["prey pLDDT"]}\n'
                 )
 
-            # best_prediction = max(result[1], key=lambda prediction: prediction[PREDICTION_THRESHOLD_METRIC])
-            # print(best_prediction)
-            # f.write(f'{result[0]}.fasta,https://www.uniprot.org/uniprotkb/{uniprot_id}/entry,{best_prediction["ipTM"]},{best_prediction["pLDDT"]},{best_prediction["pTM"]}\n')
-
     if PRINT_CANDIDATE_RESULTS:
         print(f"\n\n\n\n=================== CANDIDATE RESULTS ({PREDICTION_THRESHOLD_METRIC} > {PREDICTION_THRESHOLD_METRIC_VALUE}) ===================")
         for result in candidate_results:
