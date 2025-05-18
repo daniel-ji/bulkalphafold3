@@ -49,6 +49,7 @@ def main():
             partial_merged_df = pd.read_csv(merged_file)
             merged_df = pd.concat([merged_df, partial_merged_df], ignore_index=True)
 
+        # TODO: Adapt to not be hard-coded
         merged_df["binding domain"] = merged_df[["ROC_contacts", "COR-A_contacts", "COR-B_contacts"]].idxmax(axis=1)
         merged_df["binding domain"] = merged_df["binding domain"].map({"ROC_contacts": "ROC", "COR-A_contacts": "COR-A", "COR-B_contacts": "COR-B"})
 
@@ -80,6 +81,7 @@ def main():
 
         # plot bar chart of binding domain frequency (calculated by the max number of contacts between the three binding domains)
         plt.figure(figsize=(10, 6))
+        # TODO: Adapt to not be hard-coded
         binding_domain_order = ["ROC", "COR-A", "COR-B"]
         sns.countplot(data=merged_df, x="binding domain", alpha=0.5, label="All Data", order=binding_domain_order)
         sns.countplot(data=filtered_df, x="binding domain", alpha=0.8, label="Filtered", order=binding_domain_order)
