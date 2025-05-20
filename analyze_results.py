@@ -79,21 +79,6 @@ def main():
         g.set_axis_labels(PREDICTION_THRESHOLD_METRIC, "between clashes")
         plt.savefig(f"{OUTPUT_FOLDER}{superfolder}_jointplot_{PREDICTION_THRESHOLD_METRIC}_vs_clashes_plddt_window_{PLDDT_SLIDING_WINDOW}.svg", bbox_inches="tight")
 
-        # plot bar chart of binding domain frequency (calculated by the max number of contacts between the three binding domains)
-        plt.figure(figsize=(10, 6))
-        # TODO: Adapt to not be hard-coded
-        binding_domain_order = ["ROC", "COR-A", "COR-B"]
-        sns.countplot(data=merged_df, x="binding domain", alpha=0.5, label="All Data", order=binding_domain_order)
-        sns.countplot(data=filtered_df, x="binding domain", alpha=0.8, label="Filtered", order=binding_domain_order)
-        plt.title(f"Binding domain distribution for {superfolder}")
-        plt.xlabel("Binding domain")
-        plt.ylabel("Count")
-        plt.yscale("log")
-        ticks = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000]
-        plt.yticks(ticks, [str(tick) for tick in ticks])
-        plt.tight_layout()
-        plt.savefig(f"{OUTPUT_FOLDER}{superfolder}_binding_domain_distribution_plddt_window_{PLDDT_SLIDING_WINDOW}.svg", bbox_inches="tight")
-
         for threshold in MIN_CONTACTS_THRESHOLDS:
             plot_binding_domain_combinations(superfolder, merged_df, filtered_df, threshold)
 

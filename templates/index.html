@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>BulkAlphaFold3 Binding Domain Analysis</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .bar {
+            shape-rendering: crispEdges;
+        }
+
+        .axis line,
+        .axis path {
+            stroke: #000;
+            stroke-width: 1px;
+            fill: none;
+        }
+
+        .x-axis text {
+            text-anchor: end;
+        }
+
+        .legend rect {
+            width: 18px;
+            height: 18px;
+        }
+
+        .legend text {
+            font-size: 18px;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Binding Domain Plots</h2>
+
+    <script type="module">
+        // TODO: Import from constants.py via Flask
+        const DOMAINS = ["ROC", "COR-A", "COR-B"];
+        const IPTM_THRESHOLD = 0.4;
+        const MAX_CLASHES_THRESHOLD = 1000;
+        const SUPERFOLDERS = ["GAP", "GEF"];
+        const PLDDT_WINDOWS = [-1, 11, 25];
+        const MIN_CONTACT_THRESHOLDS = [1, 20, 80];
+
+        function generateBindingDomainCombinations(domains) {
+            const combinations = [];
+            for (let i = 1; i <= domains.length; i++) {
+                const currentCombinations = getCombinations(domains, i);
+                combinations.push(...currentCombinations);
+            }
+            return combinations;
+        }
+
+        function getCombinations(array, k) {
+            const result = [];
+            function f(start, currentCombo) {
+                if (currentCombo.length === k) {
+                    result.push(currentCombo.join("_"));
+                    return;
+                }
+                for (let i = start; i < array.length; i++) {
+                    f(i + 1, currentCombo.concat(array[i]));
+                }
+            }
+            f(0, []);
+            return result;
+        }
+
+        // Sample CSV data as a string
+        const csvData = await(await fetch('static/merged_results/GAP_merged_plddt_window_11.csv')).text();
+
+        // Set up chart dimensions
+        const margin = { top: 60, right: 20, bottom: 170, left: 60 };
+        const width = 960 - margin.left - margin.right;
+        const height = 760 - margin.top - margin.bottom;
+
+        function renderSVG(csvData, chartTitle, chartId, minContactThreshold) {
+            const svg = d3.select(`#${chartId}`)
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+
+            const parsedData = d3.csvParse(csvData, (d) => {
+                for (const key in d) {
+                    if (!isNaN(d[key]) && d[key] !== "") {
+                        d[key] = +d[key];
+                    }
+                }
+                return d;
+            })
+
+            // Calculate frequencies
+            const freqMerged = {};
+            const freqFiltered = {};
+
+            const bindingDomainCombinations = generateBindingDomainCombinations(DOMAINS).map(
+                (combo) => `${combo}_MIN_${minContactThreshold}`
+            );
+
+            bindingDomainCombinations.forEach(combo => {
+                freqMerged[combo] = d3.sum(parsedData, d => d[combo] === 1);
+                freqFiltered[combo] = d3.sum(parsedData.filter(d => d.ipTM >= IPTM_THRESHOLD && d['between clashes'] <= MAX_CLASHES_THRESHOLD), d => d[combo] === 1);
+            });
+
+            // Prepare data for D3 (array of objects for each combination)
+            const chartData = bindingDomainCombinations.map(combo => ({
+                combination: combo.replace(/_MIN_\d+$/, "").replaceAll("_", " + "),
+                allData: freqMerged[combo],
+                filtered: freqFiltered[combo]
+            }));
+
+            // Filter out combinations where both counts are 0, as log scale cannot handle 0
+            const displayData = chartData.filter(d => d.allData > 0 || d.filtered > 0);
+
+            // X scale (ordinal for categories)
+            const x = d3.scaleBand()
+                .domain(displayData.map(d => d.combination))
+                .range([0, width])
+                .padding(0.2);
+
+            // Y scale (logarithmic)
+            const y = d3.scaleLog()
+                .domain([0.5, d3.max(displayData, d => Math.max(d.allData, d.filtered))]) // 0.5 to avoid log(0)
+                .range([height, 0])
+
+            // Add X axis
+            svg.append("g")
+                .attr("class", "x-axis axis")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(x))
+                .selectAll("text")
+                .attr("transform", "rotate(-45)")
+                .style("text-anchor", "end")
+                .attr("dx", "-.8em")
+                .attr("dy", ".15em")
+                .attr("font-size", "18px");
+
+            // Add Y axis
+            svg.append("g")
+                .attr("class", "y-axis axis")
+                .call(d3.axisLeft(y))
+                .attr("font-size", "18px");
+
+            // Add Y axis label
+            svg.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - margin.left + 15) // Adjust position
+                .attr("x", 0 - (height / 2))
+                .attr("dy", "12px")
+                .style("text-anchor", "middle")
+                .text("Count")
+                .attr("font-size", "18px");
+
+            // Draw "All Data" bars
+            svg.selectAll(".bar-all")
+                .data(displayData)
+                .enter().append("rect")
+                .attr("class", "bar-all bar")
+                .attr("x", d => x(d.combination))
+                .attr("y", d => y(d.allData === 0 ? 0.5 : d.allData)) // Handle 0 by setting to 1 for log scale
+                .attr("width", x.bandwidth())
+                .attr("height", d => height - y(d.allData === 0 ? 0.5 : d.allData))
+                .attr("fill", "lightsteelblue")
+                .attr("opacity", 0.7);
+
+            // Add "All Data" labels
+            svg.selectAll(".label-all")
+                .data(displayData)
+                .enter().append("text")
+                .attr("class", "label-all label")
+                .attr("x", d => x(d.combination) + x.bandwidth() / 2)
+                .attr("y", d => y(d.allData === 0 ? 0.5 : d.allData) - 5) // Adjust position
+                .attr("text-anchor", "middle")
+                .attr("font-size", "18px")
+                .text(d => d.allData);
+
+            // Draw "Filtered" bars (on top)
+            svg.selectAll(".bar-filtered")
+                .data(displayData)
+                .enter().append("rect")
+                .attr("class", "bar-filtered bar")
+                .attr("x", d => x(d.combination))
+                .attr("y", d => y(d.filtered === 0 ? 0.5 : d.filtered)) // Handle 0 by setting to 1 for log scale
+                .attr("width", x.bandwidth())
+                .attr("height", d => height - y(d.filtered === 0 ? 0.5 : d.filtered))
+                .attr("fill", "peru")
+                .attr("opacity", 0.9);
+
+            // Add "Filtered" labels
+            svg.selectAll(".label-filtered")
+                .data(displayData)
+                .enter().append("text")
+                .attr("class", "label-filtered label")
+                .attr("x", d => x(d.combination) + x.bandwidth() / 2)
+                .attr("y", d => y(d.filtered === 0 ? 0.5 : d.filtered) - 5) // Adjust position
+                .attr("text-anchor", "middle")
+                .attr("font-size", "18px")
+                .text(d => d.filtered);
+
+            // Add legend
+            const legend = svg.append("g")
+                .attr("font-family", "sans-serif")
+                .attr("font-size", "18px")
+                .attr("text-anchor", "start")
+                .selectAll("g")
+                .data(["All Data", "Filtered"])
+                .enter().append("g")
+                .attr("transform", (d, i) => `translate(${-width + 40},${i * 20})`);
+
+            legend.append("rect")
+                .attr("x", width - 19)
+                .attr("width", 18)
+                .attr("height", 18)
+                .attr("fill", d => d === "All Data" ? "lightsteelblue" : "peru")
+                .attr("opacity", d => d === "All Data" ? 0.7 : 0.9);
+
+            legend.append("text")
+                .attr("x", width + 10)
+                .attr("y", 9)
+                .attr("dy", "0.32em")
+                .text(d => d);
+
+            // Add title
+            svg.append("text")
+                .attr("x", width / 2)
+                .attr("y", -margin.top / 2)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "22px")
+                .text(`Binding Domain Analysis for ${chartTitle}`)
+        }
+
+        for (const superfolder of SUPERFOLDERS) {
+            for (const plddtWindow of PLDDT_WINDOWS) {
+                const csvFilePath = `static/merged_results/${superfolder}_merged_plddt_window_${plddtWindow}.csv`;
+                const csvData = await(await fetch(csvFilePath)).text();
+                for (const minContactThreshold of MIN_CONTACT_THRESHOLDS) {
+                    const chartDiv = document.createElement("div");
+                    const chartTitle = `${superfolder}; sliding window ${plddtWindow}; min contact threshold ${minContactThreshold}`;
+                    const chartId = `${superfolder}_${plddtWindow}_${minContactThreshold}`;
+                    chartDiv.id = chartId;
+                    chartDiv.style.border = "1px solid black";
+                    chartDiv.style.marginTop = "40px";
+                    document.body.appendChild(chartDiv);
+                    renderSVG(csvData, chartTitle, chartId, minContactThreshold);
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>

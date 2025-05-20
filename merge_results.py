@@ -14,15 +14,9 @@ for superfolder, folders in SUPERFOLDER_TO_FOLDER.items():
         print(f"Processing {folder}", flush=True)
         predictions_file = "output_raw_results/" + folder + "_results.csv"
 
-        if PLDDT_SLIDING_WINDOW > 0:
-            clashes_file = "output_all_clashes/" + folder + f"_clashes_plddt_window_{PLDDT_SLIDING_WINDOW}.csv"
-            binding_file = "output_binding_domain/" + folder + f"_binding_domain_plddt_window_{PLDDT_SLIDING_WINDOW}.csv"
-            output_file = output_folder + folder + f"_merged_plddt_window_{PLDDT_SLIDING_WINDOW}.csv"
-        else:
-            clashes_file = "output_all_clashes/" + folder + "_clashes.csv"
-            binding_file = "output_binding_domain/" + folder + "_binding_domain.csv"
-            output_file = output_folder + folder + "_merged.csv"
-
+        clashes_file = "output_all_clashes/" + folder + f"_clashes_plddt_window_{PLDDT_SLIDING_WINDOW}.csv"
+        binding_file = "output_binding_domain/" + folder + f"_binding_domain_plddt_window_{PLDDT_SLIDING_WINDOW}.csv"
+        output_file = output_folder + folder + f"_merged_plddt_window_{PLDDT_SLIDING_WINDOW}.csv"
         predictions_df = pd.read_csv(predictions_file)
 
         if PLDDT_SLIDING_WINDOW > 0:
@@ -43,7 +37,4 @@ for superfolder, folders in SUPERFOLDER_TO_FOLDER.items():
 
         superfolder_df = pd.concat([superfolder_df, merged_df], ignore_index=True)
     
-    if PLDDT_SLIDING_WINDOW < 0:
-        superfolder_df.to_csv(output_folder + superfolder + "_merged.csv", index=False)
-    else:
         superfolder_df.to_csv(output_folder + superfolder + "_merged_plddt_window_" + str(PLDDT_SLIDING_WINDOW) + ".csv", index=False)

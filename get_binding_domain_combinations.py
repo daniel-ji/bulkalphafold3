@@ -32,10 +32,7 @@ def process_binding_domain_combinations(folder):
     # append "_contacts" to get df column names
     binding_domain_combinations_columns = [tuple(f"{domain}_contacts" for domain in combination) for combination in binding_domain_combinations]
 
-    if PLDDT_SLIDING_WINDOW < 0:
-        binding_domain_file = f"output_binding_domain/{folder}_binding_domain.csv"
-    else:
-        binding_domain_file = f"output_binding_domain/{folder}_binding_domain_plddt_window_{PLDDT_SLIDING_WINDOW}.csv"
+    binding_domain_file = f"output_binding_domain/{folder}_binding_domain_plddt_window_{PLDDT_SLIDING_WINDOW}.csv"
 
     binding_domain_df = pd.read_csv(binding_domain_file)
 
