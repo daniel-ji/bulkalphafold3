@@ -4,6 +4,8 @@
 <head>
     <title>BulkAlphaFold3 Binding Domain Analysis</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT"
+        crossorigin="anonymous">
     <style>
         body {
             font-family: sans-serif;
@@ -11,6 +13,34 @@
             display: flex;
             align-items: center;
             flex-direction: column;
+        }
+
+        #filters-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        #filters {
+            display: flex;
+            border: 3px solid black;
+            border-radius: 8px;
+        }
+
+        .filter {
+            margin: 0 20px;
+        }
+
+        #charts {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-evenly;
+            width: 100%;
+        }
+
+        .chart {
+            margin-top: 40px;
+            border: 3px solid black;
+            border-radius: 5px;
         }
 
         .bar {
@@ -40,7 +70,77 @@
 </head>
 
 <body>
-    <h2>Binding Domain Plots</h2>
+    <h2 class="mt-4">BulkAlphaFold3 GAP & GEF Binding Domain Plots</h2>
+    <div id="filters-container" class="mt-4">
+        <h4 id="filtersTitle">Filters</h4>
+        <div id="filters" class="p-3">
+            <div class="filter">
+                <h5 id="proteinTitle">Protein</h5>
+                <div class="collapse show" id="proteinCollapse">
+                    <div class="form-check">
+                        <input class="form-check-input protein-group" type="checkbox" value="all" id="proteinAll">
+                        <label class="form-check-label" for="proteinAll">Select/Deslect All</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input protein-group" type="checkbox" value="GAP" id="proteinGAP">
+                        <label class="form-check-label" for="proteinGAP">GAP</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input protein-group" type="checkbox" value="GEF" id="proteinGEF">
+                        <label class="form-check-label" for="proteinGEF">GEF</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter">
+                <h5 id="windowTitle">Sliding Window</h5>
+                <div class="collapse show" id="windowCollapse">
+                    <div class="form-check">
+                        <input class="form-check-input window-group" type="checkbox" value="all" id="windowAll">
+                        <label class="form-check-label" for="windowAll">Select/Deslect All</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input window-group" type="checkbox" value="-1" id="windowMinus1">
+                        <label class="form-check-label" for="windowMinus1">-1 (No sliding window)</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input window-group" type="checkbox" value="11" id="window11">
+                        <label class="form-check-label" for="window11">11</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input window-group" type="checkbox" value="25" id="window25">
+                        <label class="form-check-label" for="window25">25</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter">
+                <h5 id="contactTitle">Minimum Contact Threshold</h5>
+                <div class="collapse show" id="contactCollapse">
+                    <div class="form-check">
+                        <input class="form-check-input contact-group" type="checkbox" value="all" id="contactAll">
+                        <label class="form-check-label" for="contactAll">Select/Deslect All</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input contact-group" type="checkbox" value="1" id="contact1">
+                        <label class="form-check-label" for="contact1">1</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input contact-group" type="checkbox" value="20" id="contact20">
+                        <label class="form-check-label" for="contact20">20</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input contact-group" type="checkbox" value="80" id="contact80">
+                        <label class="form-check-label" for="contact80">80</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <button class="btn btn-primary mt-3" id="applyFilters">Apply Filters</button>
+        </div>
+    </div>
+    <div id="charts" class="mb-5"></div>
 
     <script type="module">
         // TODO: Import from constants.py via Flask
@@ -75,13 +175,10 @@
             return result;
         }
 
-        // Sample CSV data as a string
-        const csvData = await(await fetch('static/merged_results/GAP_merged_plddt_window_11.csv')).text();
-
         // Set up chart dimensions
         const margin = { top: 60, right: 20, bottom: 170, left: 60 };
-        const width = 960 - margin.left - margin.right;
-        const height = 760 - margin.top - margin.bottom;
+        const width = 880 - margin.left - margin.right;
+        const height = 740 - margin.top - margin.bottom;
 
         function renderSVG(csvData, chartTitle, chartId, minContactThreshold) {
             const svg = d3.select(`#${chartId}`)
@@ -240,22 +337,104 @@
                 .text(`Binding Domain Analysis for ${chartTitle}`)
         }
 
-        for (const superfolder of SUPERFOLDERS) {
-            for (const plddtWindow of PLDDT_WINDOWS) {
-                const csvFilePath = `static/merged_results/${superfolder}_merged_plddt_window_${plddtWindow}.csv`;
-                const csvData = await(await fetch(csvFilePath)).text();
-                for (const minContactThreshold of MIN_CONTACT_THRESHOLDS) {
-                    const chartDiv = document.createElement("div");
-                    const chartTitle = `${superfolder}; sliding window ${plddtWindow}; min contact threshold ${minContactThreshold}`;
-                    const chartId = `${superfolder}_${plddtWindow}_${minContactThreshold}`;
-                    chartDiv.id = chartId;
-                    chartDiv.style.border = "1px solid black";
-                    chartDiv.style.marginTop = "40px";
-                    document.body.appendChild(chartDiv);
-                    renderSVG(csvData, chartTitle, chartId, minContactThreshold);
+        function setupCheckboxGroup(allSelector, groupClass) {
+            const allCheckbox = document.querySelector(allSelector);
+            const checkboxes = document.querySelectorAll(groupClass + ':not(' + allSelector + ')');
+
+            allCheckbox.addEventListener('change', () => {
+                checkboxes.forEach(cb => cb.checked = allCheckbox.checked);
+            });
+
+            checkboxes.forEach(cb => {
+                cb.addEventListener('change', () => {
+                    const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+                    allCheckbox.checked = allChecked;
+                });
+            });
+
+            allCheckbox.click();
+        }
+
+        async function fetchCSVData(superfolder, plddtWindow) {
+            const csvFilePath = `static/merged_results/${superfolder}_merged_plddt_window_${plddtWindow}.csv`;
+            const csvData = await (await fetch(csvFilePath)).text();
+            csv_file_to_data[`${superfolder}_${plddtWindow}`] = csvData;
+        }
+
+        function getSelectedValues() {
+            const selectedProteins = Array.from(document.querySelectorAll('.protein-group:checked')).map(cb => cb.value).filter(value => value !== "all");
+            const selectedWindows = Array.from(document.querySelectorAll('.window-group:checked')).map(cb => cb.value).filter(value => value !== "all");
+            const selectedContacts = Array.from(document.querySelectorAll('.contact-group:checked')).map(cb => cb.value).filter(value => value !== "all");
+
+            const totalSelected = selectedProteins.length * selectedWindows.length * selectedContacts.length;
+            document.getElementById("filtersTitle").innerText = `Filters (${totalSelected} plots displayed)`;
+
+            return [selectedProteins, selectedWindows, selectedContacts];
+        }
+
+        async function applyFilters() {
+            const selectedValues = getSelectedValues();
+
+            if (selectedValues.some(values => values.length === 0)) {
+                alert("Please select at least one option from each filter.");
+                return;
+            }
+
+            for (const superfolder of SUPERFOLDERS) {
+                for (const plddtWindow of PLDDT_WINDOWS) {
+                    if (csv_file_to_data[`${superfolder}_${plddtWindow}`] === undefined) {
+                        await fetchCSVData(superfolder, plddtWindow);
+                    }
+                    const csvData = csv_file_to_data[`${superfolder}_${plddtWindow}`];
+                    for (const minContactThreshold of MIN_CONTACT_THRESHOLDS) {
+                        const chartId = `${superfolder}_${plddtWindow}_${minContactThreshold}`;
+                        if (shouldDisplay([superfolder, plddtWindow, minContactThreshold], selectedValues)) {
+                            console.log("HIT");
+                            if (document.getElementById(chartId)) {
+                                const chartDiv = document.getElementById(chartId);
+                                chartDiv.style.display = "block";
+                            } else {
+                                const chartDiv = document.createElement("div");
+                                const chartTitle = `${superfolder}; sliding window ${plddtWindow}; min contact threshold ${minContactThreshold}`;
+                                chartDiv.id = chartId;
+                                chartDiv.className = "chart";
+                                document.getElementById("charts").appendChild(chartDiv);
+                                renderSVG(csvData, chartTitle, chartId, minContactThreshold);
+                            }
+                        } else {
+                            const chartExists = document.getElementById(chartId);
+                            if (chartExists) {
+                                chartExists.style.display = "none";
+                            }
+                        }
+                    }
                 }
             }
         }
+
+        /**
+         * chartValues: an array of values from the current chart to display or hide
+         * selectedValues: an array of arrays of values from the selected checkboxes
+         */
+        function shouldDisplay(chartValues, selectedValues) {
+            for (let i = 0; i < chartValues.length; i++) {
+                if (!selectedValues[i].includes(chartValues[i].toString())) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        setupCheckboxGroup('#proteinAll', '.protein-group');
+        setupCheckboxGroup('#windowAll', '.window-group');
+        setupCheckboxGroup('#contactAll', '.contact-group');
+
+        document.getElementById("applyFilters").addEventListener("click", applyFilters);
+
+        const csv_file_to_data = {};
+
+        applyFilters();
     </script>
 </body>
 
