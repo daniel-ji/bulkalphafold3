@@ -18,3 +18,9 @@ output_*/
 # temporary files
 *.temp.cxc
 *.temp
+
+# any compressed files
+*.tar.gz
+*.zip
+*.tar
+*.zst

@@ -9,7 +9,7 @@ import requests
 import shutil
 import json
 from multiprocessing import Pool
-from constants import PREDICTION_THRESHOLD_METRIC, PREDICTION_THRESHOLD_METRIC_VALUE, FOLDERS
+from constants import PREDICTION_THRESHOLD_METRIC, PREDICTION_THRESHOLD_METRIC_VALUE, FOLDERS, PROCESS_COUNT
 
 RESULTS_ROOT_FOLDER = "output_raw_results/"
 PRINT_CANDIDATE_RESULTS = True
@@ -18,11 +18,10 @@ PRINT_CANDIDATE_RESULTS = True
 # REFINED_RUN_FOLDER = RESULTS_FOLDER + '_REFINED'
 # REFINED_RUN_SCRIPT = REFINED_RUN_FOLDER + '_RUN.sh'
 
-
 def process_folder(folder, results_csv):
     results = []
 
-    with Pool(os.cpu_count() // 2) as pool:
+    with Pool(processes=PROCESS_COUNT) as pool:
         results = pool.map(process_model_directory, [os.path.join(folder, file) for file in os.listdir(folder) if os.path.isdir(os.path.join(folder, file))])
 
     results_sorted = copy.deepcopy(results)
@@ -198,6 +197,9 @@ def archive_best_results(source_paths, destination_name):
 
 
 if __name__ == "__main__":
+    if not os.path.exists(RESULTS_ROOT_FOLDER):
+        os.makedirs(RESULTS_ROOT_FOLDER, exist_ok=True)
+
     for folder in FOLDERS:
         print(f"Processing {folder}", flush=True)
         results_csv = RESULTS_ROOT_FOLDER + folder + "_results.csv"

@@ -12,6 +12,8 @@ from files_helper import get_model_files
 from constants import FOLDERS, DOMAINS_TO_RESIDUES, PLDDT_SLIDING_WINDOW, USE_MULTIPROCESSING, PROCESS_COUNT
 from get_binding_domain_combinations import process_binding_domain_combinations
 
+OUTPUT_FOLDER = "output_binding_domain/"
+
 def get_binding_domain_stats(model_file):
     rand_suffix = os.urandom(4).hex()
 
@@ -100,6 +102,9 @@ def process_model_parallel(model_files):
 
 
 if __name__ == "__main__":
+    if not os.path.exists(OUTPUT_FOLDER):
+        os.makedirs(OUTPUT_FOLDER)
+
     for folder in FOLDERS:
         model_files = get_model_files(folder, residue_sliding_window=PLDDT_SLIDING_WINDOW)
         if USE_MULTIPROCESSING:
@@ -110,7 +115,7 @@ if __name__ == "__main__":
         binding_domain_contacts = [key + "_contacts" for key in DOMAINS_TO_RESIDUES.keys()]
         output_file = f"binding_domain_plddt_window_{PLDDT_SLIDING_WINDOW}.csv"
         result_df = pd.DataFrame(results, columns=["model"] + binding_domain_area + binding_domain_contacts)
-        result_df.to_csv(f"output_binding_domain/{folder}_{output_file}", index=False)
+        result_df.to_csv(f"{OUTPUT_FOLDER}{folder}_{output_file}", index=False)
         process_binding_domain_combinations(folder)
         
         print(f"Saved {folder}_{output_file}")

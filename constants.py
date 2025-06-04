@@ -3,7 +3,7 @@ import yaml
 
 # ======================= HELPER FUNCTIONS =======================
 
-CONFIG_FILE = "configs/lrrk2_roc_cor.yaml"
+CONFIG_FILE = "configs/lrrk2_rckw.yaml"
 
 
 def load_yaml_config(file_path):
@@ -17,7 +17,7 @@ CONFIG = load_yaml_config(CONFIG_FILE)
 
 # Compute-specific constants:
 USE_MULTIPROCESSING = True
-PROCESS_COUNT = 10
+PROCESS_COUNT = 6
 
 # Input & AF3 constants:
 BAIT_FILENAME = CONFIG["bait_filename"]
@@ -28,6 +28,10 @@ SUPERFOLDER_TO_FASTA = {k: [fasta for fasta, _ in fasta_and_folder] for k, fasta
 FASTA_FILES = sum(SUPERFOLDER_TO_FASTA.values(), [])
 SUPERFOLDER_TO_FOLDER = {k: [folder for _, folder in fasta_and_folder] for k, fasta_and_folder in SUPERFOLDER_TO_FASTA_AND_FOLDER.items()}
 FOLDERS = sum(SUPERFOLDER_TO_FOLDER.values(), [])
+# The model file that contains a larger region (or the entire) prey protein that were not included in the input to the bulkalphafold run;
+# Used to calculate clashes of the bait protein with other regions of the prey protein.
+# For example, with LRRK2, predictions were run using just the ROC-COR region, but the clashes_model is a pdb file containing the entire RCKW region.
+CLASHES_MODEL = CONFIG.get("clashes_model") 
 
 # Further downstream processing constants (thresholds are inclusive):
 DOMAINS_TO_RESIDUES = CONFIG["domains_to_residues"]
@@ -43,7 +47,7 @@ DOMAINS_TO_RESIDUES = CONFIG["domains_to_residues"]
 #     "WD40": [2140, 2527]
 # }
 ALL_PLDDT_WINDOWS = [-1, 11, 25]
-PLDDT_SLIDING_WINDOW = -1
+PLDDT_SLIDING_WINDOW = 11
 PREDICTION_THRESHOLD_METRIC_VALUE = 0.4
 PREDICTION_THRESHOLD_METRIC = "ipTM"
 MAX_CLASHES_THRESHOLD = 1000

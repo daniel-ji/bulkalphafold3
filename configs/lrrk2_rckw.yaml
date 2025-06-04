@@ -8,11 +8,12 @@ superfolder_to_fasta_and_folder:
     - [input_fasta/uniprotkb_GTPase_Activating_Protein_AND_2024_11_09_600AA_1000AA.fasta, GAP_600AA_1000AA_RCKW_AF3_SCREEN]
     - [input_fasta/uniprotkb_GTPase_Activating_Protein_AND_2024_11_09_1000AA_1500AA.fasta, GAP_1000AA_1500AA_RCKW_AF3_SCREEN]
     - [input_fasta/uniprotkb_GTPase_Activating_Protein_AND_2024_11_09_1500AA_2000AA.fasta, GAP_1500AA_2000AA_RCKW_AF3_SCREEN]
-  GEF:
-    - [input_fasta/uniprotkb_Guanine_Nucleotide_Exchange_F_2024_11_08_0AA_600AA.fasta, GEF_0AA_600AA_RCKW_AF3_SCREEN]
-    - [input_fasta/uniprotkb_Guanine_Nucleotide_Exchange_F_2024_11_08_600AA_1000AA.fasta, GEF_600AA_1000AA_RCKW_AF3_SCREEN]
-    - [input_fasta/uniprotkb_Guanine_Nucleotide_Exchange_F_2024_11_08_1000AA_1500AA.fasta, GEF_1000AA_1500AA_RCKW_AF3_SCREEN]
-    - [input_fasta/uniprotkb_Guanine_Nucleotide_Exchange_F_2024_11_08_1500AA_2000AA.fasta, GEF_1500AA_2000AA_RCKW_AF3_SCREEN]
+  # GEF is not decompressed yet, need to clear up some disk space
+  # GEF:
+  #   - [input_fasta/uniprotkb_Guanine_Nucleotide_Exchange_F_2024_11_08_0AA_600AA.fasta, GEF_0AA_600AA_RCKW_AF3_SCREEN]
+  #   - [input_fasta/uniprotkb_Guanine_Nucleotide_Exchange_F_2024_11_08_600AA_1000AA.fasta, GEF_600AA_1000AA_RCKW_AF3_SCREEN]
+  #   - [input_fasta/uniprotkb_Guanine_Nucleotide_Exchange_F_2024_11_08_1000AA_1500AA.fasta, GEF_1000AA_1500AA_RCKW_AF3_SCREEN]
+  #   - [input_fasta/uniprotkb_Guanine_Nucleotide_Exchange_F_2024_11_08_1500AA_2000AA.fasta, GEF_1500AA_2000AA_RCKW_AF3_SCREEN]
 
 domains_to_residues:
   ROC:
