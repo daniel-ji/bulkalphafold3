@@ -1,12 +1,45 @@
+import re
 import os
 import pandas as pd
 from modify_mmcif_plddt import get_plddt_sliding_window_mmcif
 import multiprocessing as mp
-from constants import FOLDERS, PROCESS_COUNT
+from constants import FOLDERS, PROCESS_COUNT, MAX_ID_LENGTH
+
 
 N_MODEL = -1  # -1 for all models
 # N_MODEL = 2
 
+def get_sequences_from_fasta(fasta_file):
+    """
+    Extract sequences from a FASTA file. Returns a list of protein IDs and a list of tuples (sequence ID, sequence).
+    Returns `proteins` are a list of UniProt IDs that would be used to fetch the sequences.
+    Returns `sequences` are a list of tuples, where each tuple contains a sequence ID and the corresponding sequence.
+    """
+
+    with open(fasta_file) as f:
+        proteins = [line.rstrip() for line in f if line.strip()]
+        sequences = []
+        if proteins[0][0] == ">":
+            id = ""
+            running_sequence = ""
+            for line in proteins:
+                if line[0] == ">":
+                    if running_sequence != "":
+                        assert id != ""
+                        print("Found sequence " + id)
+                        sequences.append((id, running_sequence))
+                    id = re.sub(r"\W", "_", line[1 : MAX_ID_LENGTH + 1])
+                    running_sequence = ""
+                else:
+                    running_sequence += line
+
+            if running_sequence != "":
+                assert id != ""
+                print("Found sequence " + id)
+                sequences.append((id, running_sequence))
+            proteins = []
+
+    return proteins, sequences
 
 def get_model_files(folder, residue_sliding_window, n_model=N_MODEL):
     """

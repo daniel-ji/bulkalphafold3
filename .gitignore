@@ -24,3 +24,6 @@ output_*/
 *.zip
 *.tar
 *.zst
+
+# any input files for generate_protein_complex_combinations.py
+protein_complex_input/*

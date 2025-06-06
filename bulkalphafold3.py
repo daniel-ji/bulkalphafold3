@@ -3,74 +3,29 @@ import re
 import requests
 import json
 
-from constants import BAIT_FILENAME, SUPERFOLDER_TO_FASTA_AND_FOLDER, TEMPLATE_FILE, NUMBER_OF_SEEDS
+from files_helper import get_sequences_from_fasta
+from constants import BAIT_FILENAME, SUPERFOLDER_TO_FASTA_AND_FOLDER, TEMPLATE_FILE, NUMBER_OF_SEEDS, MODEL_WEIGHTS_FOLDER, DATABASE_FOLDER
 
 # TODO: Move to config/*.yaml file and constants.py
-DATABASE_FOLDER = "$HOME/public_databases"
-MODEL_WEIGHTS_FOLDER = "$HOME/"
-MAX_ID_LENGTH = 40
 MAX_COMBINED_SEQ_LENGTH = 3600
 
 def process_folder(input_fasta, output_folder):
     bash_script_file = output_folder + "_RUN.sh"
-    bait_proteins = []  # list of uniprot ids
+    bait_uniprot_ids = []  # list of uniprot ids
     bait_sequences = []  # list of tuples, (sequence id, sequence)
-    prey_proteins = []  # list of uniprot ids
+    prey_uniprot_ids = []  # list of uniprot ids
     prey_sequences = []  # list of tuples (sequence id, sequence)
 
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
-    with open(BAIT_FILENAME) as f:
-        bait_proteins = [line.rstrip() for line in f if line.strip()]
-        # provided bait file was actual sequences
-        if bait_proteins[0][0] == ">":
-            id = ""
-            running_sequence = ""
-            for line in bait_proteins:
-                if line[0] == ">":
-                    if running_sequence != "":
-                        assert id != ""
-                        print("Found bait sequence " + id)
-                        bait_sequences.append(id, running_sequence)
-                    id = re.sub(r"\W", "_", line[1 : MAX_ID_LENGTH + 1])
-                    running_sequence = ""
-                else:
-                    running_sequence += line
+    bait_uniprot_ids, bait_sequences = get_sequences_from_fasta(BAIT_FILENAME)
+    prey_uniprot_ids, prey_sequences = get_sequences_from_fasta(input_fasta)
 
-            if running_sequence != "":
-                assert id != ""
-                print("Found bait sequence " + id)
-                bait_sequences.append((id, running_sequence))
-            bait_proteins = []
-
-    with open(input_fasta) as f:
-        prey_proteins = [line.rstrip() for line in f if line.strip()]
-        # provided prey file was actual sequences
-        if prey_proteins[0][0] == ">":
-            id = ""
-            running_sequence = ""
-            for line in prey_proteins:
-                if line[0] == ">":
-                    if running_sequence != "":
-                        assert id != ""
-                        print("Found prey sequence " + id)
-                        prey_sequences.append((id, running_sequence))
-                    id = re.sub(r"\W", "_", line[1 : MAX_ID_LENGTH + 1])
-                    running_sequence = ""
-                else:
-                    running_sequence += line
-
-            if running_sequence != "":
-                assert id != ""
-                print("Found prey sequence " + id)
-                prey_sequences.append((id, running_sequence))
-            prey_proteins = []
-
-    for protein in bait_proteins + prey_proteins:
-        file = f"{output_folder}/{protein}.fasta"
+    for uniprot_id in bait_uniprot_ids + prey_uniprot_ids:
+        file = f"{output_folder}/{uniprot_id}.fasta"
         if not os.path.exists(file):
-            url = f"https://rest.uniprot.org/uniprotkb/{protein}.fasta"
+            url = f"https://rest.uniprot.org/uniprotkb/{uniprot_id}.fasta"
             response = requests.get(url)
             if response.status_code == 200:
                 print("Downloaded " + url)
@@ -79,21 +34,21 @@ def process_folder(input_fasta, output_folder):
             else:
                 print("Failed to download: " + url)
         else:
-            print("Already downloaded, skipping " + protein)
+            print("Already downloaded, skipping " + uniprot_id)
 
     # input bait protein file were uniprot ids, so set bait_sequences to the fetched uniprot sequences
     if len(bait_sequences) == 0:
-        for bait_protein in bait_proteins:
-            with open(f"{output_folder}/{bait_protein}.fasta", "r") as f:
+        for bait_uniprot_id in bait_uniprot_ids:
+            with open(f"{output_folder}/{bait_uniprot_id}.fasta", "r") as f:
                 bait_lines = f.readlines()
-            bait_sequences.append((bait_protein, "".join(bait_lines[1:])))
+            bait_sequences.append((bait_uniprot_id, "".join(bait_lines[1:])))
 
     # input prey protein file were uniprot ids, so set bait_sequences to the fetched uniprot sequences
     if len(prey_sequences) == 0:
-        for prey_protein in prey_proteins:
-            with open(f"{output_folder}/{prey_protein}.fasta", "r") as f:
+        for prey_uniprot_id in prey_uniprot_ids:
+            with open(f"{output_folder}/{prey_uniprot_id}.fasta", "r") as f:
                 prey_lines = f.readlines()
-            prey_sequences.append((prey_protein, "".join(prey_lines[1:])))
+            prey_sequences.append((prey_uniprot_id, "".join(prey_lines[1:])))
 
     template_json = json.load(open(TEMPLATE_FILE, "r"))
     template_json["modelSeeds"] = list(range(NUMBER_OF_SEEDS))

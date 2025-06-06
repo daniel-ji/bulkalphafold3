@@ -1,0 +1,10 @@
+{
+  "name": "JOB_NAME",
+  "modelSeeds": [
+    1
+  ],
+  "sequences": [
+  ],
+  "dialect": "alphafold3",
+  "version": 3
+}

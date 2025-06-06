@@ -18,8 +18,11 @@ CONFIG = load_yaml_config(CONFIG_FILE)
 # Compute-specific constants:
 USE_MULTIPROCESSING = True
 PROCESS_COUNT = 6
+MAX_ID_LENGTH = 40
 
 # Input & AF3 constants:
+DATABASE_FOLDER = "$HOME/public_databases"
+MODEL_WEIGHTS_FOLDER = "$HOME/"
 BAIT_FILENAME = CONFIG["bait_filename"]
 TEMPLATE_FILE = CONFIG["template_file"]
 NUMBER_OF_SEEDS = CONFIG["number_of_seeds"]

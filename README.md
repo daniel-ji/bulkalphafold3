@@ -1,6 +1,8 @@
 # BulkAlphaFold3
 
-A simple pipeline to run AF3 PPI screens. Designed specifically for LRRK2 ROC-COR screens against GTPase-Activating Proteins (GAPs) and Guanine Nucleotide Exchange Factors (GEFs).
+A simple pipeline to run AF3 PPI screens and do downstream analysis of the results. Designed specifically for one bait protein and many prey proteins (to analyze AlphaFold3 predictions between the bait protein and each prey protein indvidually). 
+
+Made under the Leschziner Lab, for LRRK2 ROC-COR screens against GTPase-Activating Proteins (GAPs) and Guanine Nucleotide Exchange Factors (GEFs). Includes the ability to filter results based on binding domains and clashes with a larger bait protein region (RCKW) to determine if the prey protein is a good candidate for further analysis.
 
 **Still in development.** This is a work in progress and not a complete solution (~80% complete). Please check back for updates. Documentation is also a work in progress.
 
@@ -20,9 +22,7 @@ Planned features:
 
 ## Setting Up AlphaFold3 
 
-See the [AlphaFold3 documentation](https://github.com/google-deepmind/alphafold3) for installation instructions. Install with Docker. Note that the AlphaFold3 installation is not included in this repository and you will need to obtain model weights and install it separately.
-
-AF3 requires a powerful GPU to run. In our case (and possibly in yours), we did not have access to such a GPU, so we resorted to using LambdaLabs to run the predictions.
+See the [AlphaFold3 documentation](https://github.com/google-deepmind/alphafold3) for installation instructions. For BulkAlphaFold3, we used the Docker container to run the predictions and have a guide on [setting up the environment](guides/setting_up_environment.md) specifically for LambdaLabs, a cloud computing service that provides powerful GPUs for running AlphaFold3 predictions (we are not affiliated with LambdaLabs, but we found it to be a convenient service for running AF3 predictions since we did not have access to a powerful enough GPU).
 
 ## Overall Workflow
 
@@ -45,5 +45,22 @@ AF3 requires a powerful GPU to run. In our case (and possibly in yours), we did 
 
 ## Directory Breakdown
 
+### Input directories
+1. `configs/` - Contains configuration files for the pipeline, used to define parameters and constants across the scripts.
+2. `input_fasta/` - Contains the input FASTA files for the bait protein and the prey proteins (prey proteins are delimited by a new entry in the FASTA file '>').
+3. `run_scripts/` - Contains the generated scripts for running the AlphaFold3 predictions via Docker.
+
+### Output directories
+1. `output_raw_results/` - Contains the "raw" results from the AlphaFold3 predictions, including prediction & model information, ipTM, pLDDT, and pTM scores in CSV files.
+2. `output_all_clashes/`
+3. `output_binding_domain/`
+4. `output_merged_results/`
+5. `output_analyze_results`
+
+### Other directories
+1. `log_files`
+2. `misc`
+3. `templates`
+4. `guides` - Contains guides and documentation for the pipeline and running AlphaFold3 predictions in general. 
 
 For questions or issues, please contact Daniel at daji@ucsd.edu.
