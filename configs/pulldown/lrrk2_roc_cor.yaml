@@ -1,7 +1,9 @@
+current_pipeline: pulldown
 bait_filename: input_fasta/bait_LRRK2_ROC_COR.fasta
 template_file: input_fasta/alphafold3_input_template_roc_cor.json
 number_of_seeds: 2
 clashes_model: "LRRK2_RCKW.pdb"
+max_combined_seq_length: 3600
 
 superfolder_to_fasta_and_folder:
   GAP:

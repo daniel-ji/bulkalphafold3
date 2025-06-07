@@ -3,7 +3,7 @@ import os
 import pandas as pd
 from modify_mmcif_plddt import get_plddt_sliding_window_mmcif
 import multiprocessing as mp
-from constants import FOLDERS, PROCESS_COUNT, MAX_ID_LENGTH
+from constants import PROCESS_COUNT, MAX_ID_LENGTH
 
 
 N_MODEL = -1  # -1 for all models
@@ -74,6 +74,8 @@ def process_model_folder(model_folder, folder, residue_sliding_window, n_model=N
 
 
 if __name__ == "__main__":
+    from constants import FOLDERS
+
     for folder in FOLDERS:
         print(f"Processing {folder}", flush=True)
         model_files = get_model_files(folder, residue_sliding_window=11, n_model=N_MODEL)
