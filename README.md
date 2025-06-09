@@ -1,8 +1,6 @@
 # BulkAlphaFold3
 
-A simple pipeline to run AF3 PPI screens and do downstream analysis of the results. Designed specifically for one bait protein and many prey proteins (to analyze AlphaFold3 predictions between the bait protein and each prey protein indvidually). 
-
-Made under the Leschziner Lab, for LRRK2 ROC-COR screens against GTPase-Activating Proteins (GAPs) and Guanine Nucleotide Exchange Factors (GEFs). Includes the ability to filter results based on binding domains and clashes with a larger bait protein region (RCKW) to determine if the prey protein is a good candidate for further analysis.
+A set of pipelines to run AF3 PPI screens and individual protein complex screens and do downstream analysis of the results. Developed under the Leschziner Lab.
 
 **Still in development.** This is a work in progress and not a complete solution (~80% complete). Please check back for updates. Documentation is also a work in progress.
 
