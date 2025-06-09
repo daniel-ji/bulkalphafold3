@@ -3,6 +3,8 @@ import os
 from multiprocessing import Pool
 from calculate_clashes import calculate_clashes
 from files_helper import get_model_files
+from constants import CURRENT_PIPELINE
+assert CURRENT_PIPELINE == "pulldown", "This script is only for the pulldown pipeline"
 from constants import FOLDERS, PLDDT_SLIDING_WINDOW, PROCESS_COUNT, CLASHES_MODEL, CONFIG_FILE
 
 OUTPUT_FOLDER = "output_all_clashes/"

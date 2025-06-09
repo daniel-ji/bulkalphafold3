@@ -1,10 +1,9 @@
 current_pipeline: pulldown
-bait_filename: input_fasta/bait_LRRK2_ROC_COR.fasta
-template_file: input_fasta/alphafold3_input_template_roc_cor.json
 number_of_seeds: 2
-clashes_model: "LRRK2_RCKW.pdb"
 max_combined_seq_length: 3600
+process_count: 6
 
+bait_filename: input_fasta/bait_LRRK2_ROC_COR.fasta
 superfolder_to_fasta_and_folder:
   GAP:
     - [input_fasta/uniprotkb_GTPase_Activating_Protein_AND_2024_11_09_0AA_600AA.fasta, GAP_0AA_600AA_AF3_SCREEN]
@@ -17,6 +16,12 @@ superfolder_to_fasta_and_folder:
     - [input_fasta/uniprotkb_Guanine_Nucleotide_Exchange_F_2024_11_08_1000AA_1500AA.fasta, GEF_1000AA_1500AA_AF3_SCREEN]
     - [input_fasta/uniprotkb_Guanine_Nucleotide_Exchange_F_2024_11_08_1500AA_2000AA.fasta, GEF_1500AA_2000AA_AF3_SCREEN]
 
+plddt_sliding_window: 11
+all_plddt_windows: [-1, 11, 25]
+prediction_threshold_metric: ipTM
+prediction_threshold_metric_value: 0.4
+
+min_contacts_thresholds: [1, 20, 80]
 domains_to_residues:
   ROC:
     - 1 # 1317 - 1316
@@ -27,3 +32,6 @@ domains_to_residues:
   "COR-B":
     - 356 # 1672 - 1316
     - 557 # 1873 - 1316
+
+clashes_model: "LRRK2_RCKW.pdb"
+max_clashes_threshold: 1000

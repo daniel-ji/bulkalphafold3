@@ -8,7 +8,8 @@ For example, if the binding domains are "A", "B", and "C", the script will gener
 
 import itertools
 import pandas as pd
-
+from constants import CURRENT_PIPELINE
+assert CURRENT_PIPELINE == "pulldown", "This script is only for the pulldown pipeline"
 from constants import DOMAINS_TO_RESIDUES, FOLDERS, PLDDT_SLIDING_WINDOW, MIN_CONTACTS_THRESHOLDS
 
 

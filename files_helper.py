@@ -9,6 +9,7 @@ from constants import PROCESS_COUNT, MAX_ID_LENGTH
 N_MODEL = -1  # -1 for all models
 # N_MODEL = 2
 
+
 def get_sequences_from_fasta(fasta_file):
     """
     Extract sequences from a FASTA file. Returns a list of protein IDs and a list of tuples (sequence ID, sequence).
@@ -41,6 +42,7 @@ def get_sequences_from_fasta(fasta_file):
 
     return proteins, sequences
 
+
 def get_model_files(folder, residue_sliding_window, n_model=N_MODEL):
     """
     Get model files from the given folder. Returned files vary depending on the provided sliding window length for calculating per-residue PLDDT scores.
@@ -72,8 +74,11 @@ def process_model_folder(model_folder, folder, residue_sliding_window, n_model=N
 
     return model_files
 
-
+#TODO: In the future, support this for the complex pipeline as well.
 if __name__ == "__main__":
+    from constants import CURRENT_PIPELINE
+
+    assert CURRENT_PIPELINE == "pulldown", "This script is only for the pulldown pipeline"
     from constants import FOLDERS
 
     for folder in FOLDERS:

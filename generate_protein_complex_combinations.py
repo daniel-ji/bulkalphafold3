@@ -1,10 +1,13 @@
 # TODO: Prevent writing to existing folder
+# TODO: Support for fasta sequences with long IDs (that are possibily repetitive when truncated)
 import json
 import itertools
 import os
 import re
 
 from files_helper import get_sequences_from_fasta
+from constants import CURRENT_PIPELINE
+assert CURRENT_PIPELINE == "complex", "This script is only for the complex pipeline"
 from constants import CONFIG_FILE, CURRENT_PIPELINE, MAX_ID_LENGTH, MODEL_WEIGHTS_FOLDER, DATABASE_FOLDER, NUMBER_OF_SEEDS, TEMPLATE_FILE, INPUT_FASTA, FIXED_PROTEINS, OUTPUT_FOLDER, MAX_COMBINED_SEQ_LENGTH
 
 DIGIT_TO_WORD = {

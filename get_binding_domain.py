@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import multiprocessing as mp
 from files_helper import get_model_files
-from constants import FOLDERS, DOMAINS_TO_RESIDUES, PLDDT_SLIDING_WINDOW, USE_MULTIPROCESSING, PROCESS_COUNT
+from constants import FOLDERS, DOMAINS_TO_RESIDUES, PLDDT_SLIDING_WINDOW, PROCESS_COUNT
 from get_binding_domain_combinations import process_binding_domain_combinations
 
 OUTPUT_FOLDER = "output_binding_domain/"
@@ -107,10 +107,7 @@ if __name__ == "__main__":
 
     for folder in FOLDERS:
         model_files = get_model_files(folder, residue_sliding_window=PLDDT_SLIDING_WINDOW)
-        if USE_MULTIPROCESSING:
-            results = process_model_parallel(model_files)
-        else:
-            results = [get_binding_domain_stats(model_file) for model_file in model_files]
+        results = process_model_parallel(model_files)    
         binding_domain_area = [key + "_area" for key in DOMAINS_TO_RESIDUES.keys()]
         binding_domain_contacts = [key + "_contacts" for key in DOMAINS_TO_RESIDUES.keys()]
         output_file = f"binding_domain_plddt_window_{PLDDT_SLIDING_WINDOW}.csv"

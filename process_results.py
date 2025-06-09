@@ -9,6 +9,8 @@ import requests
 import shutil
 import json
 from multiprocessing import Pool
+from constants import CURRENT_PIPELINE
+assert CURRENT_PIPELINE == "pulldown", "This script is only for the pulldown pipeline"
 from constants import PREDICTION_THRESHOLD_METRIC, PREDICTION_THRESHOLD_METRIC_VALUE, FOLDERS, PROCESS_COUNT
 
 RESULTS_ROOT_FOLDER = "output_raw_results/"

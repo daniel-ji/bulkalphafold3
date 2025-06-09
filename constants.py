@@ -1,11 +1,12 @@
 # TODO: Migrate all constants from other files to this file.
 # TODO: Migrate hardcoded values to the config file.
 import yaml
+import multiprocessing
 
 # ======================= HELPER FUNCTIONS =======================
 
 # NOTE: This config file is used for both the pulldown pipeline and the individual complex feature prediction, depending on which script is run.
-CONFIG_FILE = "configs/complex/PxdA.yaml"
+CONFIG_FILE = "configs/pulldown/lrrk2_rckw.yaml"
 
 def load_yaml_config(file_path):
     with open(file_path, "r") as file:
@@ -18,16 +19,15 @@ CURRENT_PIPELINE = CONFIG["current_pipeline"]
 # ======================= CONFIGURATION =======================
 
 # Compute-specific constants:
-USE_MULTIPROCESSING = True
-PROCESS_COUNT = 6
+PROCESS_COUNT = CONFIG.get("process_count", multiprocessing.cpu_count() // 2)
 MAX_ID_LENGTH = 40
 
 # Input & AF3 constants:
 DATABASE_FOLDER = "$HOME/public_databases"
 MODEL_WEIGHTS_FOLDER = "$HOME/"
-NUMBER_OF_SEEDS = CONFIG["number_of_seeds"]
+NUMBER_OF_SEEDS = CONFIG.get("number_of_seeds", 2)
 MAX_COMBINED_SEQ_LENGTH = CONFIG.get("max_combined_seq_length", 10000)
-TEMPLATE_FILE = CONFIG["template_file"]
+TEMPLATE_FILE = "input_fasta/alphafold3_input_template_complex.json" if CURRENT_PIPELINE == "complex" else "input_fasta/alphafold3_input_template_pulldown.json"
 
 # ================== Pulldown pipeline specific, not used in individual complex feature ==================
 if CURRENT_PIPELINE == "pulldown":
@@ -37,12 +37,13 @@ if CURRENT_PIPELINE == "pulldown":
     FASTA_FILES = sum(SUPERFOLDER_TO_FASTA.values(), [])
     SUPERFOLDER_TO_FOLDER = {k: [folder for _, folder in fasta_and_folder] for k, fasta_and_folder in SUPERFOLDER_TO_FASTA_AND_FOLDER.items()}
     FOLDERS = sum(SUPERFOLDER_TO_FOLDER.values(), [])
-    # The model file that contains a larger region (or the entire) prey protein that were not included in the input to the bulkalphafold run;
-    # Used to calculate clashes of the bait protein with other regions of the prey protein.
-    # For example, with LRRK2, predictions were run using just the ROC-COR region, but the clashes_model is a pdb file containing the entire RCKW region.
-    CLASHES_MODEL = CONFIG.get("clashes_model") 
 
-    # Further downstream processing constants (thresholds are inclusive):
+    PLDDT_SLIDING_WINDOW = CONFIG["plddt_sliding_window"]
+    ALL_PLDDT_WINDOWS = CONFIG["all_plddt_windows"]
+    PREDICTION_THRESHOLD_METRIC = CONFIG.get("prediction_threshold_metric", "ipTM")
+    PREDICTION_THRESHOLD_METRIC_VALUE = CONFIG.get("prediction_threshold_metric_value", 0.4)
+
+    MIN_CONTACTS_THRESHOLDS = CONFIG["min_contacts_thresholds"]
     DOMAINS_TO_RESIDUES = CONFIG["domains_to_residues"]
     # FULL LRRK2
     # DOMAINS_TO_RESIDUES = {
@@ -55,12 +56,12 @@ if CURRENT_PIPELINE == "pulldown":
     #     "KINASE": [1879, 2139],
     #     "WD40": [2140, 2527]
     # }
-    ALL_PLDDT_WINDOWS = [-1, 11, 25]
-    PLDDT_SLIDING_WINDOW = 11
-    PREDICTION_THRESHOLD_METRIC_VALUE = 0.4
-    PREDICTION_THRESHOLD_METRIC = "ipTM"
-    MAX_CLASHES_THRESHOLD = 1000
-    MIN_CONTACTS_THRESHOLDS = [1, 20, 80]
+
+    # The model file that contains a larger region (or the entire) prey protein that were not included in the input to the bulkalphafold run;
+    # Used to calculate clashes of the bait protein with other regions of the prey protein.
+    # For example, with LRRK2, predictions were run using just the ROC-COR region, but the clashes_model is a pdb file containing the entire RCKW region.
+    CLASHES_MODEL = CONFIG.get("clashes_model") 
+    MAX_CLASHES_THRESHOLD = CONFIG.get("max_clashes_threshold")
 
 # ================== Indivdiual complex prediction specific, not used in pulldown pipeline ==================
 if CURRENT_PIPELINE == "complex":

@@ -1,1 +1,0 @@
-# Running a PPI Complex Screen with BulkAlphaFold3 (One Bait Protein and Multiple Prey Proteins)

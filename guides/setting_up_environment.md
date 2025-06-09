@@ -85,6 +85,15 @@ cd ~/alphafold3/
 docker build -t alphafold3 -f docker/Dockerfile .
 ```
 
+#### Predicting larger sequences
+
+Note: For predicting larger sequences (> 6000 residues on the GH200 instance), you may need to add this to the bottom of the Dockerfile (and comment out existing `ENV` lines):
+
+```dockerfile
+ENV XLA_PYTHON_CLIENT_PREALLOCATE=false
+ENV TF_FORCE_UNIFIED_MEMORY=true
+ENV XLA_CLIENT_MEM_FRACTION=3.2
+```
 
 ### Uploading AlphaFold3 Model Weights
 
@@ -98,7 +107,7 @@ Simply clone the repository and install the required Python packages:
 
 ```bash
 cd ~/
-git clone git@github.com:daniel-ji/bulkalphafold3.git
+git clone https://github.com/daniel-ji/bulkalphafold3.git
 cd bulkalphafold3/
 pip install -r requirements.txt
 ```

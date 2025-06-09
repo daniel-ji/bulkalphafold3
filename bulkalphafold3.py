@@ -4,7 +4,9 @@ import requests
 import json
 
 from files_helper import get_sequences_from_fasta
-from constants import CONFIG_FILE, CURRENT_PIPELINE, BAIT_FILENAME, SUPERFOLDER_TO_FASTA_AND_FOLDER, TEMPLATE_FILE, NUMBER_OF_SEEDS, MODEL_WEIGHTS_FOLDER, DATABASE_FOLDER, MAX_COMBINED_SEQ_LENGTH
+from constants import CURRENT_PIPELINE
+assert CURRENT_PIPELINE == "pulldown", "This script is only for the pulldown pipeline"
+from constants import CONFIG_FILE, BAIT_FILENAME, SUPERFOLDER_TO_FASTA_AND_FOLDER, TEMPLATE_FILE, NUMBER_OF_SEEDS, MODEL_WEIGHTS_FOLDER, DATABASE_FOLDER, MAX_COMBINED_SEQ_LENGTH
 
 def process_folder(input_fasta, output_folder):
     bash_script_file = output_folder + "_RUN.sh"
@@ -90,9 +92,6 @@ def process_folder(input_fasta, output_folder):
 
 if __name__ == "__main__":
     print(f"Using config file: {CONFIG_FILE}")
-    
-    if CURRENT_PIPELINE != "pulldown":
-            raise ValueError("This script is only for the pulldonw pipeline. Please ensure you are using the correct config file and have current_pipeline set to 'pulldown'.")
     
     for superfolder, folders in SUPERFOLDER_TO_FASTA_AND_FOLDER.items():
         for fasta, folder in folders:

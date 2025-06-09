@@ -1,7 +1,7 @@
 current_pipeline: complex
 number_of_seeds: 5
 max_combined_seq_length: 7000
-template_file: input_fasta/alphafold3_input_template_protein_complexes.json
+process_count: 6
 
 fixed_proteins:
 - PxdA
