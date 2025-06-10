@@ -8,7 +8,7 @@ import re
 from files_helper import get_sequences_from_fasta
 from constants import CURRENT_PIPELINE
 assert CURRENT_PIPELINE == "complex", "This script is only for the complex pipeline"
-from constants import CONFIG_FILE, CURRENT_PIPELINE, MAX_ID_LENGTH, MODEL_WEIGHTS_FOLDER, DATABASE_FOLDER, NUMBER_OF_SEEDS, TEMPLATE_FILE, INPUT_FASTA, FIXED_PROTEINS, OUTPUT_FOLDER, MAX_COMBINED_SEQ_LENGTH
+from constants import CONFIG_FILE, CURRENT_PIPELINE, MAX_ID_LENGTH, MODEL_WEIGHTS_FOLDER, DATABASE_FOLDER, NUMBER_OF_SEEDS, TEMPLATE_FILE, INPUT_FASTA, FIXED_PROTEINS, OUTPUT_FOLDER, MAX_COMBINED_SEQ_LENGTH, CUSTOM_PREDICTIONS
 
 DIGIT_TO_WORD = {
     '0': 'zero', '1': 'one', '2': 'two', '3': 'three', '4': 'four',
@@ -49,6 +49,15 @@ def generate_protein_complex_combinations():
     combinations = [tuple((tuple(fixed_proteins) + combo)) for combo in combinations]
 
     print(f"Generated {len(combinations)} combinations of protein complexes; from {len(unfixed_proteins)} unfixed proteins and {len(fixed_proteins)} fixed proteins.")
+
+    custom_predictions = [tuple(custom_prediction) for custom_prediction in CUSTOM_PREDICTIONS] if CUSTOM_PREDICTIONS else []
+
+    if custom_predictions:
+        overlap = set(custom_predictions) & set(combinations)
+        print(f"Adding {len(custom_predictions)} custom predictions to the combinations (found {len(overlap)} overlaps with generated combinations).")
+        non_overlap_combinations = [combo for combo in custom_predictions if combo not in combinations]
+        combinations.extend(non_overlap_combinations)
+        print(f"{len(combinations)} total combinations after adding custom predictions.")
 
     if not os.path.exists(OUTPUT_FOLDER):
         os.makedirs(OUTPUT_FOLDER)

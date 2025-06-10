@@ -1,13 +1,16 @@
 current_pipeline: complex
 number_of_seeds: 5
-max_combined_seq_length: 7000
-process_count: 6
+max_combined_seq_length: 10000
+process_count: 10
 
 fixed_proteins:
 - PxdA
 - AN4585
 - AN3602
 - AN4965
+
+custom_predictions:
+- [AN4585, AN3602, AN4965, AN3669, AN5898, AN7628]
 
 input_fasta: examples/complex/PxdA.fasta
 output_folder: output_protein_complex/PxdA
