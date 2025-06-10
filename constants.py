@@ -67,5 +67,5 @@ if CURRENT_PIPELINE == "pulldown":
 if CURRENT_PIPELINE == "complex":
     INPUT_FASTA = CONFIG["input_fasta"]
     OUTPUT_FOLDER = CONFIG["output_folder"]
-    FIXED_PROTEINS = CONFIG["fixed_proteins"]
+    FIXED_PROTEINS = CONFIG.get("fixed_proteins")
     CUSTOM_PREDICTIONS = CONFIG.get("custom_predictions")
