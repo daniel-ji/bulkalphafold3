@@ -84,7 +84,7 @@ def main():
 
         unique_uniprot_link = filtered_df["uniprot link"].unique()
         print(f"\n\n\n\n=================== {superfolder} ===================")
-        print(f"Filtered predictions for {superfolder}: {len(filtered_df)} models out of {len(merged_df)} models; {len(unique_uniprot_link)} unique proteins")
+        print(f"Filtered predictions for {superfolder}: {len(unique_uniprot_link)} unique proteins")
         with open(output_tsv_file, "w") as f:
             f.write("uniprot\tprotein\torganism\thits\n")
             for uniprot_link in unique_uniprot_link:

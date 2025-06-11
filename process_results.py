@@ -53,16 +53,16 @@ def process_folder(folder, results_csv):
                     f'{prediction["model"]},{result[0]}.fasta,{prediction["seed"]},{prediction["sample"]},https://www.uniprot.org/uniprotkb/{uniprot_id}/entry,{prediction["ipTM"]},{prediction["pTM"]},{prediction["pLDDT"]},{prediction["bait pLDDT"]},{prediction["prey pLDDT"]}\n'
                 )
 
-    if PRINT_CANDIDATE_RESULTS:
-        print(f"\n\n\n\n=================== CANDIDATE RESULTS ({PREDICTION_THRESHOLD_METRIC} > {PREDICTION_THRESHOLD_METRIC_VALUE}) ===================")
-        for result in candidate_results:
-            print(f"{PREDICTION_THRESHOLD_METRIC}: {max(prediction[PREDICTION_THRESHOLD_METRIC] for prediction in result[1])}")
-            uniprot_id = result[0].split("/")[1].split("_")[0]
-            # uniprot edge case
-            if len(uniprot_id) == 2:
-                uniprot_id = result[0].split("/")[1].split("_")[1]
-            print_uniprot_details(uniprot_id)
-            print(f"Full result details: {result}\n")
+    # if PRINT_CANDIDATE_RESULTS:
+    #     print(f"\n\n\n\n=================== CANDIDATE RESULTS ({PREDICTION_THRESHOLD_METRIC} > {PREDICTION_THRESHOLD_METRIC_VALUE}) ===================")
+    #     for result in candidate_results:
+    #         print(f"{PREDICTION_THRESHOLD_METRIC}: {max(prediction[PREDICTION_THRESHOLD_METRIC] for prediction in result[1])}")
+    #         uniprot_id = result[0].split("/")[1].split("_")[0]
+    #         # uniprot edge case
+    #         if len(uniprot_id) == 2:
+    #             uniprot_id = result[0].split("/")[1].split("_")[1]
+    #         print_uniprot_details(uniprot_id)
+    #         print(f"Full result details: {result}\n")
 
 
 def process_model_directory(model_path):
