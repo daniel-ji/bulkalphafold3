@@ -6,7 +6,7 @@ import multiprocessing
 # ======================= HELPER FUNCTIONS =======================
 
 # NOTE: This config file is used for both the pulldown pipeline and the individual complex feature prediction, depending on which script is run.
-CONFIG_FILE = "configs/complex/PxdA.yaml"
+CONFIG_FILE = "configs/pulldown/lrrk2_rckw.yaml"
 
 def load_yaml_config(file_path):
     with open(file_path, "r") as file:

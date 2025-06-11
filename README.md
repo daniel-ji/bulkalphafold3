@@ -1,6 +1,6 @@
 # BulkAlphaFold3
 
-A set of pipelines to run AF3 PPI screens and individual protein complex screens and do downstream analysis of the results. Developed under the Leschziner Lab.
+A set of pipelines to run AF3 PPI screens and individual protein complex screens and do downstream analysis of the results. Developed under the Leschziner Lab. Inspired by the [AlphaPulldown](https://github.com/KosinskiLab/AlphaPulldown) package and tailored for our needs. 
 
 **Still in development.** This is a work in progress and not a complete solution (~80% complete). Please check back for updates. Documentation is also a work in progress.
 

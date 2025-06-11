@@ -129,7 +129,7 @@ def print_uniprot_details(uniprot_id):
     if uniprot_details is not None:
         for key, value in uniprot_details.items():
             print(f"{key}: {value}")
-        print(f"UNIPROT LINK: https://www.uniprot.org/uniprotkb/{uniprot_id}/entry")
+        print(f"UNIPROT LINK: https://www.uniprot.org/uniprotkb/{uniprot_id}/entry", flush=True)
 
     return uniprot_details
 

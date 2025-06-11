@@ -53,9 +53,8 @@ def main():
         output_csv_file = OUTPUT_FOLDER + superfolder + f"_analysis_plddt_window_{PLDDT_SLIDING_WINDOW}.csv"
         output_tsv_file = OUTPUT_FOLDER + superfolder + f"_filtered_plddt_window_{PLDDT_SLIDING_WINDOW}.tsv"
 
-        # TODO: Adapt to not be hard-coded
-        merged_df["binding domain"] = merged_df[["ROC_contacts", "COR-A_contacts", "COR-B_contacts"]].idxmax(axis=1)
-        merged_df["binding domain"] = merged_df["binding domain"].map({"ROC_contacts": "ROC", "COR-A_contacts": "COR-A", "COR-B_contacts": "COR-B"})
+        merged_df["highest binding domain"] = merged_df[[f"{domain}_contacts" for domain in DOMAINS_TO_RESIDUES.keys()]].idxmax(axis=1)
+        merged_df["highest binding domain"] = merged_df["highest binding domain"].map({f"{domain}_contacts": domain for domain in DOMAINS_TO_RESIDUES.keys()})
 
         best_by_metric_idx = merged_df.groupby("fasta")[PREDICTION_THRESHOLD_METRIC].idxmax()
         top_by_metric_df = merged_df.loc[best_by_metric_idx].reset_index(drop=True)
@@ -77,23 +76,22 @@ def main():
 
         # print & write out filtered results
         filtered_df = filtered_df.sort_values(by=PREDICTION_THRESHOLD_METRIC, ascending=False).reset_index(drop=True)
-        filtered_df["uniprot link"] = filtered_df["fasta"].apply(lambda x: f"https://www.uniprot.org/uniprot/{x.split('_')[0]}")
         filtered_df.to_csv(output_csv_file, index=False)
         print(f"Filtered predictions saved to {output_csv_file}")
 
-        # unique_uniprot_link = filtered_df["uniprot link"].unique()
-        # print(f"\n\n\n\n=================== {superfolder} ===================")
-        # print(f"Filtered predictions for {superfolder}: {len(filtered_df)} models out of {len(merged_df)} models; {len(unique_uniprot_link)} unique proteins")
-        # with open(output_tsv_file, "w") as f:
-        #     f.write("uniprot\tprotein\torganism\thits\n")
-        #     for uniprot_link in unique_uniprot_link:
-        #         print()
-        #         uniprot_details = print_uniprot_details(uniprot_link.split("/")[-2])
-        #         hits = filtered_df[filtered_df["uniprot link"] == uniprot_link].shape[0]
-        #         f.write(f"{uniprot_link}\t{uniprot_details['full_name']}\t{uniprot_details['organism']}\t{hits}\n")
-
         for threshold in MIN_CONTACTS_THRESHOLDS:
             plot_binding_domain_combinations(superfolder, merged_df, filtered_df, threshold)
+
+        unique_uniprot_link = filtered_df["uniprot link"].unique()
+        print(f"\n\n\n\n=================== {superfolder} ===================")
+        print(f"Filtered predictions for {superfolder}: {len(filtered_df)} models out of {len(merged_df)} models; {len(unique_uniprot_link)} unique proteins")
+        with open(output_tsv_file, "w") as f:
+            f.write("uniprot\tprotein\torganism\thits\n")
+            for uniprot_link in unique_uniprot_link:
+                print()
+                uniprot_details = print_uniprot_details(uniprot_link.split("/")[-2])
+                hits = filtered_df[filtered_df["uniprot link"] == uniprot_link].shape[0]
+                f.write(f"{uniprot_link}\t{uniprot_details['full_name']}\t{uniprot_details['organism']}\t{hits}\n")
 
 
 if __name__ == "__main__":
