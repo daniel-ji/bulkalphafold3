@@ -16,7 +16,7 @@ superfolder_to_fasta_and_folder:
     - [input_fasta/uniprotkb_Guanine_Nucleotide_Exchange_F_2024_11_08_1000AA_1500AA.fasta, GEF_1000AA_1500AA_RCKW_AF3_SCREEN]
     - [input_fasta/uniprotkb_Guanine_Nucleotide_Exchange_F_2024_11_08_1500AA_2000AA.fasta, GEF_1500AA_2000AA_RCKW_AF3_SCREEN]
 
-plddt_sliding_window: 11
+plddt_sliding_window: -1
 all_plddt_windows: [-1, 11, 25]
 prediction_threshold_metric: ipTM
 prediction_threshold_metric_value: 0.4

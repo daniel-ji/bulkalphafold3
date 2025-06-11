@@ -14,7 +14,7 @@ def get_plddt_sliding_window_mmcif(input_file, residue_sliding_window=1, target_
         Writes to a new mmCIF file with the same name as the input file but with the sliding window as a suffix.
     """
 
-    output_file = input_file.replace(".cif", f"_plddt_window_{residue_sliding_window}.cif")
+    output_file = input_file.replace(".cif", f"_plddt_window_{residue_sliding_window}.cif") if residue_sliding_window > 1 else input_file
 
     if os.path.exists(output_file):
         # print(f"Output file {output_file} already exists. Skipping modification.")
