@@ -6,7 +6,7 @@ import pandas as pd
 from process_results import print_uniprot_details
 from constants import CURRENT_PIPELINE
 assert CURRENT_PIPELINE == "pulldown", "This script is only for the pulldown pipeline"
-from constants import SUPERFOLDER_TO_FOLDER, PLDDT_SLIDING_WINDOW, MAX_CLASHES_THRESHOLD, CLASHES_MODEL, PREDICTION_THRESHOLD_METRIC, PREDICTION_THRESHOLD_METRIC_VALUE, DOMAINS_TO_RESIDUES, MIN_CONTACTS_THRESHOLDS
+from constants import SUPERFOLDER_TO_FOLDER, PLDDT_SLIDING_WINDOW, MAX_CLASHES_THRESHOLD, CLASHES_MODEL, PREDICTION_THRESHOLD_METRIC, PREDICTION_THRESHOLD_METRIC_VALUE, DOMAINS_TO_RESIDUES, MIN_CONTACTS_THRESHOLDS, BINDING_DOMAINS_FILTER
 from get_binding_domain_combinations import generate_binding_domain_combinations
 
 INPUT_FOLDER = "output_merged_results/"
@@ -59,11 +59,14 @@ def main():
         best_by_metric_idx = merged_df.groupby("fasta")[PREDICTION_THRESHOLD_METRIC].idxmax()
         top_by_metric_df = merged_df.loc[best_by_metric_idx].reset_index(drop=True)
 
+        if BINDING_DOMAINS_FILTER is not None:
+            filtered_df = merged_df[merged_df["highest binding domain"].isin(BINDING_DOMAINS_FILTER)]
+
         if MAX_CLASHES_THRESHOLD is None or CLASHES_MODEL is None:
-            print("No clashes data available, filtering only by prediction threshold metric")
-            filtered_df = merged_df[merged_df[PREDICTION_THRESHOLD_METRIC] >= PREDICTION_THRESHOLD_METRIC_VALUE]
+            print("No clashes data available, not filtering by clashes.")
+            filtered_df = filtered_df[(filtered_df[PREDICTION_THRESHOLD_METRIC] >= PREDICTION_THRESHOLD_METRIC_VALUE)]
         else:
-            filtered_df = merged_df[(merged_df[PREDICTION_THRESHOLD_METRIC] >= PREDICTION_THRESHOLD_METRIC_VALUE) & (merged_df["between clashes"] <= MAX_CLASHES_THRESHOLD)]
+            filtered_df = filtered_df[(filtered_df[PREDICTION_THRESHOLD_METRIC] >= PREDICTION_THRESHOLD_METRIC_VALUE) & (filtered_df["between clashes"] <= MAX_CLASHES_THRESHOLD)]
             # plot distribution of prediction metric and clashes vs. RCKW
             g = sns.JointGrid(x=PREDICTION_THRESHOLD_METRIC, y="between clashes", data=top_by_metric_df, height=8)
             g.plot_marginals(sns.kdeplot)

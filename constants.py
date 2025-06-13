@@ -62,6 +62,7 @@ if CURRENT_PIPELINE == "pulldown":
     # For example, with LRRK2, predictions were run using just the ROC-COR region, but the clashes_model is a pdb file containing the entire RCKW region.
     CLASHES_MODEL = CONFIG.get("clashes_model") 
     MAX_CLASHES_THRESHOLD = CONFIG.get("max_clashes_threshold")
+    BINDING_DOMAINS_FILTER = CONFIG.get("binding_domains_filter")
 
 # ================== Indivdiual complex prediction specific, not used in pulldown pipeline ==================
 if CURRENT_PIPELINE == "complex":

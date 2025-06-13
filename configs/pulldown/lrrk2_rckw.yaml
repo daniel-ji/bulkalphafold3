@@ -38,3 +38,4 @@ domains_to_residues:
   WD40:
     - 824 # 2140 - 1316
     - 1211 # 2527 - 1316
+binding_domains_filter: ["ROC", "COR-A", "COR-B"]
