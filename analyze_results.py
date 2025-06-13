@@ -61,7 +61,7 @@ def main():
 
         if MAX_CLASHES_THRESHOLD is None or CLASHES_MODEL is None:
             print("No clashes data available, filtering only by prediction threshold metric")
-            filtered_df = top_by_metric_df[top_by_metric_df[PREDICTION_THRESHOLD_METRIC] >= PREDICTION_THRESHOLD_METRIC_VALUE]
+            filtered_df = merged_df[merged_df[PREDICTION_THRESHOLD_METRIC] >= PREDICTION_THRESHOLD_METRIC_VALUE]
         else:
             filtered_df = merged_df[(merged_df[PREDICTION_THRESHOLD_METRIC] >= PREDICTION_THRESHOLD_METRIC_VALUE) & (merged_df["between clashes"] <= MAX_CLASHES_THRESHOLD)]
             # plot distribution of prediction metric and clashes vs. RCKW
@@ -84,7 +84,7 @@ def main():
 
         unique_uniprot_link = filtered_df["uniprot link"].unique()
         print(f"\n\n\n\n=================== {superfolder} ===================")
-        print(f"Filtered predictions for {superfolder}: {len(unique_uniprot_link)} unique proteins")
+        print(f"Filtered predictions for {superfolder}: {len(unique_uniprot_link)} unique proteins, {filtered_df.shape[0]} total predictions")
         with open(output_tsv_file, "w") as f:
             f.write("uniprot\tprotein\torganism\thits\n")
             for uniprot_link in unique_uniprot_link:
