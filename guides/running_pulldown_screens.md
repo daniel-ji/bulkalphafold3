@@ -136,4 +136,12 @@ Run `python merge_results.py` to merge the results from the previous scripts (`p
 
 10. **analyze_results.py**
 
-Run `python analyze_results.py` to analyze the merged results and filter the predictions based on the prediction threshold metric (ipTM, pLDDT, or pTM) and the clashes score. This script will create a CSV & TSV file of good candidates (filtered by specified metrics and thresholds) and plots for visualization in the `output_analyze_results/` directory.
+Run `python analyze_results.py` to analyze the merged results and filter the predictions based on the prediction threshold metric (ipTM, pLDDT, or pTM) and the clashes score. This script will create a CSV & TSV file of good candidates (filtered by specified metrics and thresholds) and plots for visualization in the `output_analyze_results/` directory. Specifically, the visualization plots are binding domain histograms, categorizing each prey protein by thresholding on the number of contacts with the bait protein domains to determine what combination of binding domains the prey proteins have with the bait protein. The histograms include bars for both all prey proteins and the filtered proteins (per user provided model score threshold and clashes threshold).
+
+### Visualization (IN DEVELOPMENT)
+
+**Note that this currently only works for the LRRK2 ROC-COR bait protein and needs to be adapted and modularized for other pulldown screens.**
+
+**Note that the ability to tune parameters passed into the pulldown screen is currently limited and is a priority for future development.**
+
+Run `python app.py` to start the Flask web application for visualizing the results. This will create a local web server that you can access in your browser to view the visualization plots produced in `analyze_results.py`.
