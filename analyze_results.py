@@ -93,6 +93,10 @@ def main():
                 hits = filtered_df[filtered_df["uniprot link"] == uniprot_link].shape[0]
                 f.write(f"{uniprot_link}\t{uniprot_details['full_name']}\t{uniprot_details['organism']}\t{hits}\n")
 
+        tsv_df = pd.read_csv(output_tsv_file, sep="\t")
+        tsv_df = tsv_df.sort_values(by="hits", ascending=False).reset_index(drop=True)
+        tsv_df.to_csv(output_tsv_file, sep="\t", index=False)
+
 
 if __name__ == "__main__":
     main()

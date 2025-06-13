@@ -4,7 +4,7 @@ import os
 
 from constants import ALL_PLDDT_WINDOWS, MIN_CONTACTS_THRESHOLDS, SUPERFOLDER_TO_FASTA_AND_FOLDER
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='web_visualization/')
 
 @app.route('/static/merged_results/<path:filename>')
 def serve_merged_results(filename):
